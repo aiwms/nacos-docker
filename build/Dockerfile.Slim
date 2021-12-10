@@ -6,7 +6,7 @@ ARG HOT_FIX_FLAG=""
 RUN set -x \
     && curl -SL --output /var/tmp/nacos-server.tar.gz https://github.com/alibaba/nacos/releases/download/${NACOS_VERSION}${HOT_FIX_FLAG}/nacos-server-${NACOS_VERSION}.tar.gz \
     && tar -xzvf /var/tmp/nacos-server.tar.gz -C /home \
-    && rm -rf /var/tmp/nacos-server.tar.gz /home/nacos/bin/* /home/nacos/conf/*.properties /home/nacos/conf/*.example /home/nacos/conf/nacos-mysql.sql
+    && rm -rf /var/tmp/nacos-server.tar.gz /home/nacos/bin/* /home/nacos/conf/*.properties /home/nacos/conf/*.example /home/nacos/conf/*.sql     /home/nacos/conf/nacos-logboack.xml
 
 FROM openjdk:8-jre-slim
 
@@ -35,6 +35,7 @@ COPY --from=installer ["/home/nacos", "/home/nacos"]
 
 ADD bin/docker-startup.sh bin/docker-startup.sh
 ADD conf/application.properties conf/application.properties
+ADD conf/nacos-logback.xml conf/nacos-logback.xml
 
 # set startup log dir
 RUN mkdir -p logs \
