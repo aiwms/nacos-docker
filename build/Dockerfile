@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjdk-debian:8
+FROM openjdk:8-jdk-alpine
 
 
 # set environment
@@ -24,11 +24,11 @@ ARG HOT_FIX_FLAG=""
 
 WORKDIR $BASE_DIR
 
-RUN apt-get update && apt-get install wget \
+RUN apk update  && apk add wget \
     && wget  https://github.com/alibaba/nacos/releases/download/${NACOS_VERSION}${HOT_FIX_FLAG}/nacos-server-${NACOS_VERSION}.tar.gz -P /home
 RUN tar -xzvf /home/nacos-server-${NACOS_VERSION}.tar.gz -C /home \
     && rm -rf /home/nacos-server-${NACOS_VERSION}.tar.gz /home/nacos/bin/* /home/nacos/conf/*.properties /home/nacos/conf/*.example /home/nacos/conf/nacos-mysql.sql
-RUN apt-get remove -y wget  && apt-get clean all \
+RUN apk del wget  --quiet \
     && ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo $TIME_ZONE > /etc/timezone
 
 
