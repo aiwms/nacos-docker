@@ -1,6 +1,5 @@
 FROM openjdk:8-jdk-alpine
 
-
 # set environment
 ENV MODE="standalone" \
     PREFER_HOST_MODE="ip"\
@@ -24,17 +23,8 @@ ARG HOT_FIX_FLAG=""
 
 WORKDIR $BASE_DIR
 
-RUN apk update  && apk add wget \
-    && wget  https://github.com/alibaba/nacos/releases/download/${NACOS_VERSION}${HOT_FIX_FLAG}/nacos-server-${NACOS_VERSION}.tar.gz -P /home
-RUN tar -xzvf /home/nacos-server-${NACOS_VERSION}.tar.gz -C /home \
-    && rm -rf /home/nacos-server-${NACOS_VERSION}.tar.gz /home/nacos/bin/* /home/nacos/conf/*.properties /home/nacos/conf/*.example /home/nacos/conf/nacos-mysql.sql
-RUN apk del wget  --quiet \
-    && ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo $TIME_ZONE > /etc/timezone
 
-
-
-
-
+COPY ["nacos","./"]
 ADD bin/docker-startup.sh bin/docker-startup.sh
 ADD conf/application.properties conf/application.properties
 ADD conf/nacos-logback.xml conf/nacos-logback.xml
@@ -44,8 +34,10 @@ RUN mkdir -p logs \
 	&& cd logs \
 	&& touch start.out \
 	&& ln -sf /dev/stdout start.out \
-	&& ln -sf /dev/stderr start.out
+	&& ln -sf /dev/stderr start.out \
+    && ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo $TIME_ZONE > /etc/timezone
 RUN chmod +x bin/docker-startup.sh
 
 EXPOSE 8848
-ENTRYPOINT ["bin/docker-startup.sh"]
+
+ENTRYPOINT ["sh","bin/docker-startup.sh"]
