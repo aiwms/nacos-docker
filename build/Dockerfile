@@ -29,13 +29,15 @@ ADD bin/docker-startup.sh bin/docker-startup.sh
 ADD conf/application.properties conf/application.properties
 ADD conf/nacos-logback.xml conf/nacos-logback.xml
 
+RUN apk update && apk add --no-cache libc6-compat
 # set startup log dir
 RUN mkdir -p logs \
 	&& cd logs \
 	&& touch start.out \
 	&& ln -sf /dev/stdout start.out \
 	&& ln -sf /dev/stderr start.out \
-    && ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo $TIME_ZONE > /etc/timezone
+    && ln -snf /usr/share/zoneinfo/$TIME_ZONE /etc/localtime && echo $TIME_ZONE > /etc/timezone \
+    && ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
 RUN chmod +x bin/docker-startup.sh
 
 EXPOSE 8848
